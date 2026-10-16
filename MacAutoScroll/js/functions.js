@@ -19,6 +19,11 @@ function stopScrolling() {
     document.removeEventListener('wheel', preventScrolling, true);
     document.removeEventListener('keydown', preventScrolling, true);
   }
+
+  // Always safe to run, also cleans up when called while already stopped
+  if (stopScrollOnMouseUp) {
+    document.removeEventListener('mouseup', stopScrollOnMouseUp);
+  }
 }
 
 // Function to check if an element is overflow hidden

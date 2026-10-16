@@ -8,9 +8,10 @@ This extension is supposed to be faithful to the original feature as much as pos
 
 ## Features
 
-* **Middle-click auto-scrolling**: Click the middle mouse button to activate auto-scroll mode
+* **Middle-click auto-scrolling**: Click and hold the middle mouse button for 1 second to activate auto-scroll mode
 * **Directional scrolling**: Move your mouse in any direction to control scroll speed and direction
 * **Speed control**: Scroll speed increases based on how far you move the mouse from the initial click point
+* **Configurable domains**: Use regular expressions to choose which websites auto-scroll works on (see Settings below)
 
 ## Installation
 
@@ -29,7 +30,7 @@ git clone https://github.com/Spark4444/MacAutoScroll
 
 ## Usage
 
-* **Activating auto-scroll**: Click the middle mouse button on any webpage that has scrollable content
+* **Activating auto-scroll**: Press and hold the middle mouse button for 1 second on any webpage that has scrollable content. A small circle at the click point fills up while you hold the button; auto-scroll starts as soon as it is full
 * **Controlling direction and speed**: 
   - Move your mouse away from the initial click point to start scrolling
   - The further you move the mouse, the faster the scrolling becomes
@@ -41,6 +42,30 @@ git clone https://github.com/Spark4444/MacAutoScroll
   - Switch to another tab or window
   - Move the mouse back to the center (dead zone)
 
+A quick middle click (shorter than 1 second) is left untouched, so opening links in
+new tabs, middle-click paste and middle-drag gestures of websites keep working.
+
+## Settings
+
+Right click the extension icon and choose "Options" (or open the extension details
+page and click "Extension options") to configure:
+
+* **Enable extension**: master switch
+* **Long press duration**: how long the middle button must be held before
+  auto-scroll activates (100 - 5000 ms, default 1000 ms)
+* **Active domains**: one regular expression per line, matched against the
+  domain (hostname) in the address bar. Lines starting with `#` are comments,
+  and an empty list means every website. Examples:
+
+  ```
+  example\.com$          # example.com and any subdomain
+  .*\.google\.com$       # all google.com subdomains
+  (^|\.)zhihu\.com$      # zhihu.com and its subdomains
+  ```
+
+  The settings page validates each pattern and includes a tester where you can
+  type a domain to see whether auto-scroll would be active there.
+
 ## How It Works
 
 * **Event Detection**: The extension listens for middle mouse button clicks (button 1) on all web pages
@@ -49,7 +74,7 @@ git clone https://github.com/Spark4444/MacAutoScroll
 
 * **Speed Calculation**: Calculates scroll speed based on mouse distance from the initial click point
 
-* **Dead Zone**:  The extension uses a 2% screen size dead zone to make the hitboxes of the initial click point larger so it's easier to navigate back to the center and to use the single direction movements.
+* **Dead Zone**:  The extension uses a 4% screen size dead zone to make the hitboxes of the initial click point larger so it's easier to navigate back to the center and to use the single direction movements.
 
 * **Direction Mapping**: Maps mouse movement to 8 different scroll directions with corresponding cursor icons
 

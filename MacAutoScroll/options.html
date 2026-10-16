@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mac AutoScroll 设置</title>
+  <link rel="stylesheet" href="css/options.css">
+</head>
+<body>
+  <main class="page">
+    <header class="page-header">
+      <h1>Mac AutoScroll</h1>
+      <p class="subtitle">中键长按自动滚屏 · 设置</p>
+    </header>
+
+    <section class="card">
+      <h2>通用</h2>
+
+      <div class="row">
+        <div class="row-text">
+          <span class="label">启用扩展</span>
+          <span class="hint">关闭后所有网站都不会触发自动滚屏</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="enabled">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="row">
+        <div class="row-text">
+          <span class="label">长按触发时间</span>
+          <span class="hint">按住中键多久后开始滚动（100 - 5000 毫秒）</span>
+        </div>
+        <div class="number-field">
+          <input type="number" id="longPressMs" min="100" max="5000" step="50">
+          <span class="unit">ms</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>生效域名</h2>
+      <p class="hint">
+        每行一个正则表达式，匹配地址栏中的域名（hostname）。
+        以 <code>#</code> 开头的行是注释，<strong>留空表示所有网站生效</strong>。
+      </p>
+      <textarea id="domains" rows="8" spellcheck="false"
+        placeholder="例如：&#10;example\.com$&#10;.*\.google\.com$&#10;# 这行是注释"></textarea>
+      <p class="hint">
+        示例：<code>^www\.bilibili\.com$</code>、<code>github\.com$</code>、<code>(^|\.)zhihu\.com$</code>
+      </p>
+      <div id="patternErrors" class="errors" hidden></div>
+
+      <div class="tester">
+        <label class="label" for="testHost">测试域名</label>
+        <input type="text" id="testHost" placeholder="输入域名，如 www.example.com">
+        <div id="testResult" class="test-result"></div>
+      </div>
+    </section>
+
+    <footer class="actions">
+      <span id="status" class="status"></span>
+      <div class="buttons">
+        <button id="reset" class="btn secondary" type="button">恢复默认</button>
+        <button id="save" class="btn primary" type="button">保存</button>
+      </div>
+    </footer>
+  </main>
+
+  <script src="js/settings.js"></script>
+  <script src="js/options.js"></script>
+</body>
+</html>
