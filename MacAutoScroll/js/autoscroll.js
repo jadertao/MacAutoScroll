@@ -345,9 +345,15 @@ function startScrolling(event, targetElement, scrollbarDirection) {
   // create an overlay for the autoscroll
   createOverlay(scrollbarDirection);
 
-  // Scroll the page continuously
+  // Pages that animate or snap programmatic scrolling would make the
+  // auto-scroll feel slow, neutralize them while it is active
+  neutralizeScrollSnapping(targetElement);
+
+  // Scroll the page continuously. "instant" overrides a page level
+  // scroll-behavior: smooth, which would otherwise animate every single
+  // scroll step and slow the auto-scroll down.
   scrollInterval = setInterval(function () {
-    targetElement.scrollBy(scrollSpeedX, scrollSpeedY);
+    targetElement.scrollBy(scrollSpeedX, scrollSpeedY, { behavior: 'instant' });
   }, 10);
 
   // Listen for mouse movements and switching to another tab

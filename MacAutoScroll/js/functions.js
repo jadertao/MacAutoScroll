@@ -10,6 +10,8 @@ function stopScrolling() {
       removeOverlay();
     }
 
+    restoreScrollSnapping();
+
     if (updateScrollSpeed) {
       document.removeEventListener('mousemove', updateScrollSpeed);
     }
@@ -26,15 +28,65 @@ function stopScrolling() {
   }
 }
 
-// Function to check if an element is overflow hidden
-function isElementOverflowHidden(element) {
-  const styles = getComputedStyle(element);
-  const result = {
-    horizontal: styles.overflowX === 'hidden' || styles.overflowX === 'clip',
-    vertical: styles.overflowY === 'hidden' || styles.overflowY === 'clip',
-  };
+// ---------------------------------------------------------------------------
+// Programmatic scrolling can be animated ("scroll-behavior: smooth") or
+// snapped ("scroll-snap-type") by the page itself. Both would slow the
+// auto-scroll down, so they are neutralized on the scroll containers while
+// auto-scroll is active and restored afterwards.
+// ---------------------------------------------------------------------------
 
-  return result;
+let scrollSnapOverrides = [];
+
+function neutralizeScrollSnapping(targetElement) {
+  restoreScrollSnapping();
+
+  const elements = [targetElement, document.documentElement, document.body];
+
+  for (const element of elements) {
+    if (!element || !element.style) {
+      continue;
+    }
+
+    scrollSnapOverrides.push({
+      element: element,
+      scrollBehavior: element.style.getPropertyValue('scroll-behavior'),
+      scrollSnapType: element.style.getPropertyValue('scroll-snap-type'),
+    });
+
+    element.style.setProperty('scroll-behavior', 'auto', 'important');
+    element.style.setProperty('scroll-snap-type', 'none', 'important');
+  }
+}
+
+function restoreScrollSnapping() {
+  for (const override of scrollSnapOverrides) {
+    // Setting a property to an empty string removes the inline declaration
+    override.element.style.setProperty('scroll-behavior', override.scrollBehavior);
+    override.element.style.setProperty('scroll-snap-type', override.scrollSnapType);
+  }
+  scrollSnapOverrides = [];
+}
+
+// Force instant scroll behavior on an element for a short moment and return
+// the previous inline declaration so it can be restored afterwards
+function forceInstantScrollBehavior(element) {
+  if (!element || !element.style) {
+    return null;
+  }
+
+  const saved = {
+    value: element.style.getPropertyValue('scroll-behavior'),
+    priority: element.style.getPropertyPriority('scroll-behavior'),
+  };
+  element.style.setProperty('scroll-behavior', 'auto', 'important');
+  return saved;
+}
+
+function restoreScrollBehavior(element, saved) {
+  if (!element || !element.style || !saved) {
+    return;
+  }
+  element.style.setProperty('scroll-behavior', saved.value, saved.priority);
 }
 
 // Function to check if an element has a scrollbar
@@ -46,15 +98,25 @@ function isElementScrollable(element) {
       let res = !!element[dir];
 
       if (!res) {
+        // "scroll-behavior: smooth" animates the scroll, so the property
+        // would not change synchronously and the check would report a
+        // scrollable element as not scrollable. Force instant behavior
+        // while probing.
+        const savedBehavior = forceInstantScrollBehavior(element);
         element[dir] = 1;
         res = !!element[dir];
         element[dir] = 0;
+        restoreScrollBehavior(element, savedBehavior);
       }
 
       return res;
     }
 
-    const hasOverflow = isElementOverflowHidden(element);
+    const styles = getComputedStyle(element);
+    const hasOverflow = {
+      horizontal: styles.overflowX === 'hidden' || styles.overflowX === 'clip',
+      vertical: styles.overflowY === 'hidden' || styles.overflowY === 'clip',
+    };
     const hasVerticalScrollbar =
       checkScrollBar(element, 'vertical') && !hasOverflow.vertical;
     const hasHorizontalScrollbar =

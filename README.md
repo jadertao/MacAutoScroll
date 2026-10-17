@@ -78,7 +78,8 @@ page and click "Extension options") to configure:
 
 * **Direction Mapping**: Maps mouse movement to 8 different scroll directions with corresponding cursor icons
 
-* **Smooth Scrolling**: Uses `setInterval` for smooth, continuous scrolling at 10ms intervals
+* **Smooth Scrolling**: Uses `setInterval` for smooth, continuous scrolling at 10ms intervals, always with `behavior: "instant"` so a page level `scroll-behavior: smooth` cannot slow it down
+* **Page Scroll Interference**: While auto-scroll is active, `scroll-behavior: smooth` and `scroll-snap-type` of the scroll container are temporarily neutralized (and restored afterwards), because both would otherwise animate or snap every scroll step and make the auto-scroll feel slow or get stuck
 
 * **Auto-cleanup**: Automatically stops scrolling when the user clicks, switches tabs, or moves the mouse to the center
 
